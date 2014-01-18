@@ -210,6 +210,7 @@ int main()
 				b[j] = peo[i].field[j];
 			}
 		}
+
 		tree.Insert(a, b, (peo[i].id*MULTIPLY_NUMBER + i));
 
         system("pause");
