@@ -10,12 +10,13 @@ using namespace std;
 
 
 #define N 2000
-#define DimensionNum 16
+#define AllDimesionNum 16
+#define DimensionNum 2
 #define CharNum 2
 #define MaxLength 20
 
 #define FIELD_VALUE_MIN 0
-#define FIELD_VALUE_MAX 26
+#define FIELD_VALUE_MAX 128
 
 #define DISTANCE_THRESHOLD 55
 #define DISTANCE_THRESHOLD_MIN 30
@@ -92,7 +93,7 @@ void input()
 		scanf("%d",&peo[i].type);
 		scanf("%d", &peo[i].dupid);
 
-		for(int j = 0; j < DimensionNum; j++)
+        for(int j = 0; j < AllDimesionNum; j++)
         {
             for(int k = 0; k < MaxLength; k++)
             {
@@ -178,7 +179,7 @@ peoDistance peoDis[N+10][N+10];
 int main()
 {
     freopen("dataset2000extractALLDimensions.txt","r",stdin);
-    freopen("dataset2000ourwork_R.txt","w",stdout);
+    //freopen("dataset2000ourwork_R.txt","w",stdout);
     
 	int i, j;
 	input();
@@ -195,25 +196,31 @@ int main()
     //将结点插入R树中
 	for (int i = 0; i < N; i++)
 	{
-		int a[DimensionNum * CharNum];
-		int b[DimensionNum * CharNum];
+        int a[DimensionNum * CharNum];
+        int b[DimensionNum * CharNum];
 		for (int j = 0; j < DimensionNum * CharNum; j++)
 		{
 			if(peo[i].field[j] == -1)
 			{
-				a[j] = FIELD_VALUE_MIN;
+                a[j] = FIELD_VALUE_MIN;
 				b[j] = FIELD_VALUE_MAX;
 			}
 			else
 			{
-				a[j] = peo[i].field[j];
-				b[j] = peo[i].field[j];
+                //a[j] = peo[i].field[j];
+				a[j] = peo[i].field[j] + rand()%5;
+				//b[j] = peo[i].field[j] + rand()%5;
+                b[j] = a[j];
 			}
 		}
-
+        printf("%d %d %d\n", peo[i].id, peo[i].type, peo[i].dupid);
+        for (int j = 0; j < DimensionNum * CharNum; j++)
+        {
+            printf("%lf ", peo[i].field[j]);
+        }
+        puts("");
 		tree.Insert(a, b, (peo[i].id*MULTIPLY_NUMBER + i));
 
-        system("pause");
 	}
     
 
