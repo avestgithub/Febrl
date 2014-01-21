@@ -4,6 +4,7 @@
 #include<string.h>
 #include<algorithm>
 #include<math.h>
+#include <time.h>
 #include "RTree.h"
 using namespace std;
 #define INF 2100000000
@@ -11,16 +12,14 @@ using namespace std;
 
 #define N 2000
 #define AllDimesionNum 16
-#define DimensionNum 2
+#define DimensionNum 8
 #define CharNum 2
 #define MaxLength 20
 
 #define FIELD_VALUE_MIN 0
-#define FIELD_VALUE_MAX 128
+#define FIELD_VALUE_MAX 26
 
-#define DISTANCE_THRESHOLD 55
-#define DISTANCE_THRESHOLD_MIN 30
-#define DISTANCE_THRESHOLD_MAX 60
+#define DISTANCE_THRESHOLD 1000
 #define MULTIPLY_NUMBER 100000
 
 
@@ -32,7 +31,7 @@ struct people
     int dupid;
 
     int record[DimensionNum][MaxLength];
-    double field[DimensionNum * CharNum];
+    int field[DimensionNum * CharNum];
 }peo[N + 10];
 
 
@@ -65,6 +64,8 @@ bool MySearchCallback(int id, void* arg)
 
 	//if(calPeoDistance(peo[nowIndex], peo[index]) <= DISTANCE_THRESHOLD)
 	int distance = calPeoDistance(peo[nowIndex], peo[index]);
+    //if(distance > 150)
+    //    printf("  %d\n", distance);
 	hitCnt[distance]++;
 	
 	//printf("nowIndex = %d, nowNum = %d, Hit data rect %d ", nowIndex, peo[nowIndex].num, id);
@@ -140,9 +141,6 @@ int CountAllTheDup()
 }
 
 
-
-
-
 //对记录按照id进行排序
 bool cmpDup(people px, people py)
 {
@@ -179,7 +177,8 @@ peoDistance peoDis[N+10][N+10];
 int main()
 {
     freopen("dataset2000extractALLDimensions.txt","r",stdin);
-    //freopen("dataset2000ourwork_R.txt","w",stdout);
+    freopen("dataset2000ourwork_R8D.txt","w",stdout);
+    srand((unsigned)time(NULL));
     
 	int i, j;
 	input();
@@ -208,21 +207,19 @@ int main()
 			else
 			{
                 //a[j] = peo[i].field[j];
-				a[j] = peo[i].field[j] + rand()%5;
-				//b[j] = peo[i].field[j] + rand()%5;
+				a[j] = peo[i].field[j] + (rand() + i) % 1;
                 b[j] = a[j];
 			}
 		}
         printf("%d %d %d\n", peo[i].id, peo[i].type, peo[i].dupid);
         for (int j = 0; j < DimensionNum * CharNum; j++)
         {
-            printf("%lf ", peo[i].field[j]);
+            printf("%d ", a[j]);
         }
         puts("");
-		tree.Insert(a, b, (peo[i].id*MULTIPLY_NUMBER + i));
-
+		tree.Insert(a, b, (peo[i].id*MULTIPLY_NUMBER + i)); 
 	}
-    
+
 
 	hitOut = 0;
 	searchOut = 0;

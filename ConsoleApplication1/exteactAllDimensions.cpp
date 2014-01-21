@@ -106,18 +106,21 @@ int main()
             int len = strlen(temps);
             if(temps[0] == '-' || len == 0)
                 continue;
+            //'0'-'9'
             if(temps[0] >= '0' && temps[0] <= '9')
             {
                 for(int k = 0; k < len; k++)
                 {
-                    peo[i].record[j][k] = temps[k] - '\0';
+                    //数字取后两位，和前期实验保持一致
+                    peo[i].record[j][k] = temps[len - k - 1] - '0';
                 }
             }
+            //'a'-'z'
             else
             {
                 for(int k = 0; k < len; k++)
                 {
-                    peo[i].record[j][k] = temps[k] - '\0';
+                    peo[i].record[j][k] = temps[k] - 'a';
                 }
             }
         }
@@ -129,11 +132,23 @@ int main()
         //output info
         printf("%3d %3d %3d ",peo[i].id, peo[i].type, peo[i].dupid);
 
+        /*
+        culture3
+        title2
+        social_security_ID2
+        postcode2
+        phone_number2
+        address2
+        surname2
+        given_name2
+        */
+        int sorted[16] = {0, 4, 14, 9, 13, 11, 6, 5, 1, 2, 3, 7, 8, 10, 12, 15};
+
         for(int j = 0; j < DimensionNum; j++)
         {
             for (int k = 0; k < MaxLength; k++)
             {
-                printf("%d ", peo[i].record[j][k]);
+                printf("%d ", peo[i].record[sorted[j]][k]);
             }
         }
 		printf("\n");
