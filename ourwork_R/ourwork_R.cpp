@@ -10,13 +10,13 @@ using namespace std;
 #define INF 2100000000
 
 
-#define N 2000
+#define N 10000
 #define AllDimesionNum 16
-#define DimensionNum 8
+#define DimensionNum 3
 #define CharNum 2
 #define MaxLength 20
 
-#define FIELD_VALUE_MIN 0
+#define FIELD_VALUE_MIN -1
 #define FIELD_VALUE_MAX 26
 
 #define DISTANCE_THRESHOLD 1000
@@ -57,6 +57,8 @@ int hitOut = 0;
 int hitCnt[1000];
 int dupCnt[1000];
 
+int hitIndexCnt[10000];
+
 bool MySearchCallback(int id, void* arg)
 {
 	int index = id % MULTIPLY_NUMBER;
@@ -64,6 +66,7 @@ bool MySearchCallback(int id, void* arg)
 
 	//if(calPeoDistance(peo[nowIndex], peo[index]) <= DISTANCE_THRESHOLD)
 	int distance = calPeoDistance(peo[nowIndex], peo[index]);
+    //printf("id = %d nowindex = %d index = %d distance = %d\n", id, nowIndex, index, distance);
     //if(distance > 150)
     //    printf("  %d\n", distance);
 	hitCnt[distance]++;
@@ -71,6 +74,7 @@ bool MySearchCallback(int id, void* arg)
 	//printf("nowIndex = %d, nowNum = %d, Hit data rect %d ", nowIndex, peo[nowIndex].num, id);
 	if(num == peo[nowIndex].id && nowIndex > index)
 	{
+        hitIndexCnt[num] ++;
 		dupCnt[distance]++;
 		//searchOut ++;
 		//printf("search out!");
@@ -99,6 +103,8 @@ void input()
             for(int k = 0; k < MaxLength; k++)
             {
                 scanf("%d", &peo[i].record[j][k]);
+                if(peo[i].record[j][k] > 25)
+                    printf("%d\n", peo[i].record[j][k]);
             }
         }
 	}
@@ -176,8 +182,8 @@ peoDistance peoDis[N+10][N+10];
 
 int main()
 {
-    freopen("dataset2000extractALLDimensions.txt","r",stdin);
-    freopen("dataset2000ourwork_R8D.txt","w",stdout);
+    freopen("dataset10000extractALLDimensions.txt","r",stdin);
+    freopen("dataset10000ourwork_R6D.txt","w",stdout);
     srand((unsigned)time(NULL));
     
 	int i, j;
@@ -197,7 +203,7 @@ int main()
 	{
         int a[DimensionNum * CharNum];
         int b[DimensionNum * CharNum];
-		for (int j = 0; j < DimensionNum * CharNum; j++)
+		for (int j = 0; j < (DimensionNum * CharNum); j++)
 		{
 			if(peo[i].field[j] == -1)
 			{
@@ -206,18 +212,17 @@ int main()
 			}
 			else
 			{
-                //a[j] = peo[i].field[j];
-				a[j] = peo[i].field[j] + (rand() + i) % 1;
+				a[j] = peo[i].field[j];
                 b[j] = a[j];
 			}
 		}
-        printf("%d %d %d\n", peo[i].id, peo[i].type, peo[i].dupid);
-        for (int j = 0; j < DimensionNum * CharNum; j++)
-        {
-            printf("%d ", a[j]);
-        }
-        puts("");
-		tree.Insert(a, b, (peo[i].id*MULTIPLY_NUMBER + i)); 
+        //printf("%d %d %d\n", peo[i].id, peo[i].type, peo[i].dupid);
+        //for (int j = 0; j < DimensionNum * CharNum; j++)
+        //{
+        //    printf("%d ", a[j]);
+        //}
+        //puts("");
+		tree.Insert(a, b, (peo[i].id*MULTIPLY_NUMBER + i));
 	}
 
 
@@ -229,7 +234,7 @@ int main()
 	{
 		int a[DimensionNum * CharNum];
 		int b[DimensionNum * CharNum];
-		for (int j = 0; j < DimensionNum * CharNum; j++)
+		for (int j = 0; j < (DimensionNum * CharNum); j++)
 		{
 			a[j] = FIELD_VALUE_MIN;
 			b[j] = FIELD_VALUE_MAX;
@@ -247,5 +252,10 @@ int main()
 		printf("for %8d comparasion , we find %8d dups", hitCnt[i], dupCnt[i]);
 		printf(" , the recall is %9.8lf\n",(double)dupCnt[i]/dupCount);
 	}
-    return 0;
+    //for(int i = 0; i < N; i++)
+    //{
+    //    printf("index = %d,  %d\n", i, hitIndexCnt[i]);
+    //}
+
+    return 0;   
 }

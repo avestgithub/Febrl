@@ -8,7 +8,7 @@ using namespace std;
 //dataset2_1000_1000_3_2_4_zipf_all_1
 //dataset2_5000_5000_9_5_5_zipf_all_1
 
-#define N 2000
+#define N 10000
 #define DimensionNum 16
 #define MaxLength 20
 
@@ -65,8 +65,8 @@ void init()
 
 int main()
 {
-    freopen("dataset2000clean.txt","r",stdin);
-    freopen("dataset2000extractALLDimensions.txt","w",stdout);
+    freopen("dataset10000clean.txt","r",stdin);
+    freopen("dataset10000extractALLDimensions.txt","w",stdout);
     
 
     int cnt = 0;
@@ -106,19 +106,14 @@ int main()
             int len = strlen(temps);
             if(temps[0] == '-' || len == 0)
                 continue;
-            //'0'-'9'
-            if(temps[0] >= '0' && temps[0] <= '9')
+            for(int k = 0; k < len; k++)
             {
-                for(int k = 0; k < len; k++)
+                if(temps[k] >= '0' && temps[k] <= '9')
                 {
                     //数字取后两位，和前期实验保持一致
-                    peo[i].record[j][k] = temps[len - k - 1] - '0';
+                    peo[i].record[j][len - k - 1] = temps[k] - '0';
                 }
-            }
-            //'a'-'z'
-            else
-            {
-                for(int k = 0; k < len; k++)
+                else if(temps[k] >= 'a' && temps[k] <= 'z')
                 {
                     peo[i].record[j][k] = temps[k] - 'a';
                 }

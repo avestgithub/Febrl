@@ -11,8 +11,8 @@ using namespace std;
 int main()
 {
     
-    freopen("dataset2000.txt","r",stdin);
-    freopen("dataset2000clean.txt","w",stdout);
+    freopen("dataset10000.txt","r",stdin);
+    freopen("dataset10000clean.txt","w",stdout);
 
     int i,j;
     int cnt=0;
