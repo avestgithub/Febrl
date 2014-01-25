@@ -76,7 +76,8 @@ bool cmpByKey(people px, people py)
     {
         for(int k = 0; k < MaxLength; k++)
         {
-            if(px.record[j][k] != py.record[j][k])
+            //把判断去掉，使得程序和之前同步
+            //if(px.record[j][k] != py.record[j][k])
                 return px.record[j][k] < py.record[j][k];
         }
     }

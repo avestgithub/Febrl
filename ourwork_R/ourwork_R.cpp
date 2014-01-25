@@ -12,7 +12,7 @@ using namespace std;
 
 #define N 10000
 #define AllDimesionNum 16
-#define DimensionNum 3
+#define DimensionNum 16
 #define CharNum 2
 #define MaxLength 20
 
@@ -67,8 +67,8 @@ bool MySearchCallback(int id, void* arg)
 	//if(calPeoDistance(peo[nowIndex], peo[index]) <= DISTANCE_THRESHOLD)
 	int distance = calPeoDistance(peo[nowIndex], peo[index]);
     //printf("id = %d nowindex = %d index = %d distance = %d\n", id, nowIndex, index, distance);
-    //if(distance > 150)
-    //    printf("  %d\n", distance);
+    if(distance > 150)
+        printf("  %d\n", distance);
 	hitCnt[distance]++;
 	
 	//printf("nowIndex = %d, nowNum = %d, Hit data rect %d ", nowIndex, peo[nowIndex].num, id);
@@ -183,7 +183,7 @@ peoDistance peoDis[N+10][N+10];
 int main()
 {
     freopen("dataset10000extractALLDimensions.txt","r",stdin);
-    freopen("dataset10000ourwork_R6D.txt","w",stdout);
+    //freopen("dataset10000ourwork_R16D.txt","w",stdout);
     srand((unsigned)time(NULL));
     
 	int i, j;
@@ -212,16 +212,17 @@ int main()
 			}
 			else
 			{
-				a[j] = peo[i].field[j];
+                a[j] = peo[i].field[j] + rand()%1;
+                //a[j] = peo[i].field[j];
                 b[j] = a[j];
 			}
 		}
-        //printf("%d %d %d\n", peo[i].id, peo[i].type, peo[i].dupid);
-        //for (int j = 0; j < DimensionNum * CharNum; j++)
-        //{
-        //    printf("%d ", a[j]);
-        //}
-        //puts("");
+        printf("%d %d %d\n", peo[i].id, peo[i].type, peo[i].dupid);
+        for (int j = 0; j < DimensionNum * CharNum; j++)
+        {
+            printf("%d ", a[j]);
+        }
+        puts("");
 		tree.Insert(a, b, (peo[i].id*MULTIPLY_NUMBER + i));
 	}
 
