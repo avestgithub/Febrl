@@ -6,51 +6,90 @@
 #include<math.h>
 using namespace std;
 
+//dataset2_1000_1000_3_2_4_zipf_all_1
+//dataset2_5000_5000_9_5_5_zipf_all_1
+
 
 #define N 2000
-#define DimensionNum 16
-#define MaxLength 20
-
 #define Wmin 2
 #define Wmax N-1
 
+
 struct people
 {
-    int id;
-    //org==0&&dup==1
-    bool type;
+    /*
+    culture3
+    title2
+    social_security_ID2
+    postcode2
+    phone_number2
+    address2
+    surname2
+    given_name2
+    */
+    int num;
+    bool type;//org==0&&dup==1
     int dupid;
+    
+    char cul[4];
+    char title[3];
 
-    int record[DimensionNum][MaxLength];
-}peo[N + 10];
+    int id;
+    int post;
+    int phone;
+
+    char add[3];
+    char sur[3];
+    char given[3];
+}peo[N+10];
 
 
-//输入函数
+
 void input()
 {
+	int i;
     int cnt = 0;
     char temps[1000];
     char tempc = '\0';
 	int tempi=-1;
 	gets(temps);//the header
 
-    for(int i = 0; i < N; i++)
+    for(i = 0; i < N; i++)
     {
-        scanf("%d",&peo[i].id);
+        scanf("%d",&peo[i].num);
 		scanf("%d",&peo[i].type);
 		scanf("%d", &peo[i].dupid);
 
-        for(int j = 0; j < DimensionNum; j++)
-        {
-            for(int k = 0; k < MaxLength; k++)
-            {
-                scanf("%d", &peo[i].record[j][k]);
-            }
-        }
+		scanf("%s",peo[i].cul);//cul, //char3
+		scanf("%s",peo[i].title);//title, //char2
+
+		scanf("%d",&peo[i].id);//soc_sec_id, //int2
+		scanf("%d",&peo[i].post);//postcode, //int2
+		scanf("%d",&peo[i].phone);//phone_number, //int2
+
+		scanf("%s",peo[i].add);//address_1, //char2
+		scanf("%s",peo[i].sur);//surname, //char2
+		scanf("%s",peo[i].given);//given_name, //char2
+
 	}
 }
 
-//找出所有实际存在的重复记录数
+void output()
+{
+	int i;
+	for(i = 0; i < N; i++)
+    {
+		printf("%3d %3d %3d ",peo[i].num, peo[i].type, peo[i].dupid);
+		printf("%3s %3s ",peo[i].cul,peo[i].title);
+		printf("%3d %3d %3d ",peo[i].id, peo[i].post, peo[i].phone);
+		printf("%3s %3s %3s \n",peo[i].add, peo[i].sur, peo[i].given);
+
+	}
+
+}
+
+
+
 int CountAllTheDup()
 {
 	int i,j;
@@ -59,7 +98,7 @@ int CountAllTheDup()
 	{
 		for(j=i+1;j<N;j++)
 		{
-			if(peo[i].id!=peo[j].id)
+			if(peo[i].num!=peo[j].num)
 			{
 				break;
 			}
@@ -70,29 +109,46 @@ int CountAllTheDup()
 }
 
 
+/*
 bool cmpByKey(people px, people py)
 {
-    for(int j = 0; j < DimensionNum; j++)
-    {
-        for(int k = 0; k < MaxLength; k++)
-        {
-            //把判断去掉，使得程序和之前同步
-            //if(px.record[j][k] != py.record[j][k])
-                return px.record[j][k] < py.record[j][k];
-        }
-    }
-    return 0;
+	return strcmp(px.cul , py.cul) < 0;
+	return strcmp(px.title , py.title) < 0;
+	return px.id < py.id;
+	return px.post < py.post;
+	return px.phone < py.phone;
+	return strcmp(px.add , py.add) < 0;
+	return strcmp(px.sur , py.sur) < 0;
+	return strcmp(px.given , py.given) < 0;
+}
+*/
+
+//andther sorting order
+bool cmpByKey(people px, people py)
+{
+    if(strcmp(px.given , py.given) != 0)
+        return strcmp(px.given , py.given) < 0;
+    if(strcmp(px.sur , py.sur) != 0)
+        return strcmp(px.sur , py.sur) < 0;
+    if(strcmp(px.add , py.add) != 0)
+        return strcmp(px.add , py.add) < 0;
+    if(px.phone != py.phone)
+        return px.phone < py.phone;
+    if(px.post != py.post)
+        return px.post < py.post;
+    if(px.id != py.id)
+        return px.id < py.id;
+    if(strcmp(px.cul , py.cul) != 0)
+	    return strcmp(px.cul , py.cul) < 0;
+    if(strcmp(px.title , py.title) != 0)
+	    return strcmp(px.title , py.title) < 0;
 }
 
-//对记录按照id进行排序
 bool cmpDup(people px, people py)
 {
-    if(px.id != py.id)
-	    return px.id < py.id;
-    if(px.type != py.type)
-	    return px.type < py.type;
-    if(px.dupid != py.dupid)
-	    return px.dupid < py.dupid;
+	return px.num < py.num;
+	return px.type < py.type;
+	return px.dupid < py.dupid;
 }
 
 
@@ -108,7 +164,7 @@ int countSnmDup(int winSize)
 		for(j = i + 1; (j < N) && (i + winSize > j); j++)
 		{
 			compareCount ++;
-			if(peo[i].id == peo[j].id)
+			if(peo[i].num == peo[j].num)
 				dupCount ++;
 		}
 	}
@@ -120,14 +176,15 @@ int countSnmDup(int winSize)
 int main()
 {
 
-    freopen("dataset2000extractALLDimensions.txt","r",stdin);
-    freopen("dataset2000snm.txt","w",stdout);
+    freopen("dataset2000extract.txt","r",stdin);
+    freopen("dataset2000snm8D.txt","w",stdout);
 
 	int i;
 	input();
 	sort(peo,peo+N,cmpDup);
 	int dupCount=CountAllTheDup();
 	printf("dupcount=%d\n",dupCount);
+	//output();
 	sort(peo,peo+N,cmpByKey);
 	for(int winSize = Wmin; winSize <= Wmax; winSize++)
 	{
@@ -136,5 +193,6 @@ int main()
 		printf("for %8d comparasion , we find %8d dups",compareCount,snmDupCount);
 		printf(" , the recall is %9.8lf\n",(double)snmDupCount/dupCount);
 	}
+
     return 0;
 }

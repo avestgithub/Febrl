@@ -12,7 +12,7 @@ using namespace std;
 
 #define N 10000
 #define AllDimesionNum 16
-#define DimensionNum 16
+#define DimensionNum 10
 #define CharNum 2
 #define MaxLength 20
 
@@ -183,7 +183,7 @@ peoDistance peoDis[N+10][N+10];
 int main()
 {
     freopen("dataset10000extractALLDimensions.txt","r",stdin);
-    //freopen("dataset10000ourwork_R16D.txt","w",stdout);
+    freopen("dataset10000ourwork_R10D.txt","w",stdout);
     srand((unsigned)time(NULL));
     
 	int i, j;
@@ -212,8 +212,8 @@ int main()
 			}
 			else
 			{
-                a[j] = peo[i].field[j] + rand()%1;
-                //a[j] = peo[i].field[j];
+                //a[j] = peo[i].field[j] + rand()%2;
+                a[j] = peo[i].field[j];
                 b[j] = a[j];
 			}
 		}
