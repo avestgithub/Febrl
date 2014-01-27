@@ -4,6 +4,7 @@
 #include<string.h>
 #include<algorithm>
 #include<math.h>
+#include <time.h>
 using namespace std;
 
 //dataset2_1000_1000_3_2_4_zipf_all_1
@@ -104,40 +105,27 @@ int CountAllTheDup()
 }
 
 
-/*
 bool cmpByKey(people px, people py)
 {
-	return strcmp(px.cul , py.cul) < 0;
-	return strcmp(px.title , py.title) < 0;
-	return px.id < py.id;
-	return px.post < py.post;
-	return px.phone < py.phone;
-	return strcmp(px.add , py.add) < 0;
-	return strcmp(px.sur , py.sur) < 0;
-	return strcmp(px.given , py.given) < 0;
-}
-*/
-
-//andther sorting order
-bool cmpByKey(people px, people py)
-{
+    if(strcmp(px.cul , py.cul) != 0)
+	    return strcmp(px.cul , py.cul) < 0;
+    if(strcmp(px.title , py.title) != 0)
+	    return strcmp(px.title , py.title) < 0;
+    if(px.id != py.id)
+        return px.id < py.id;
+    if(px.post != py.post)
+        return px.post < py.post;
+    if(px.phone != py.phone)
+        return px.phone < py.phone;
     if(strcmp(px.given , py.given) != 0)
         return strcmp(px.given , py.given) < 0;
     if(strcmp(px.sur , py.sur) != 0)
         return strcmp(px.sur , py.sur) < 0;
     if(strcmp(px.add , py.add) != 0)
         return strcmp(px.add , py.add) < 0;
-    if(px.phone != py.phone)
-        return px.phone < py.phone;
-    if(px.post != py.post)
-        return px.post < py.post;
-    if(px.id != py.id)
-        return px.id < py.id;
-    if(strcmp(px.cul , py.cul) != 0)
-	    return strcmp(px.cul , py.cul) < 0;
-    if(strcmp(px.title , py.title) != 0)
-	    return strcmp(px.title , py.title) < 0;
+    return 0;
 }
+
 
 bool cmpDup(people px, people py)
 {
@@ -193,6 +181,7 @@ int countDcsDup(int winSize)
 }
 
 
+clock_t clockBegin, clockEnd;
 
 int main()
 {
@@ -202,6 +191,7 @@ int main()
 
 	int i;
 	input();
+    clockBegin = clock();
 	sort(peo,peo+N,cmpDup);
 	int dupCount=CountAllTheDup();
 	printf("dupcount=%d\n",dupCount);
@@ -214,6 +204,7 @@ int main()
 		printf("for %8d comparasion , we find %8d dups",compareCount,dcsDupCount);
 		printf(" , the recall is %9.8lf\n",(double)dcsDupCount/dupCount);
 	}
-
+    clockEnd = clock();
+    printf("\nSpent %lf seconds.\n", (float)(clockEnd - clockBegin)/1000.0);
     return 0;
 }
