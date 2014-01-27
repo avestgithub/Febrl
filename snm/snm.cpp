@@ -1,4 +1,4 @@
-//SNMÀ„∑®
+//SNM
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -7,11 +7,8 @@
 #include<time.h>
 using namespace std;
 
-//dataset2_1000_1000_3_2_4_zipf_all_1
-//dataset2_5000_5000_9_5_5_zipf_all_1
 
-
-#define N 2000
+#define N 10000
 #define Wmin 2
 #define Wmax N-1
 
@@ -74,21 +71,6 @@ void input()
 	}
 }
 
-void output()
-{
-	int i;
-	for(i = 0; i < N; i++)
-    {
-		printf("%3d %3d %3d ",peo[i].num, peo[i].type, peo[i].dupid);
-		printf("%3s %3s ",peo[i].cul,peo[i].title);
-		printf("%3d %3d %3d ",peo[i].id, peo[i].post, peo[i].phone);
-		printf("%3s %3s %3s \n",peo[i].add, peo[i].sur, peo[i].given);
-
-	}
-
-}
-
-
 
 int CountAllTheDup()
 {
@@ -111,22 +93,22 @@ int CountAllTheDup()
 
 bool cmpByKey(people px, people py)
 {
-    if(strcmp(px.cul , py.cul) != 0)
-	    return strcmp(px.cul , py.cul) < 0;
-    if(strcmp(px.title , py.title) != 0)
-	    return strcmp(px.title , py.title) < 0;
-    if(px.id != py.id)
-        return px.id < py.id;
-    if(px.post != py.post)
-        return px.post < py.post;
-    if(px.phone != py.phone)
-        return px.phone < py.phone;
     if(strcmp(px.given , py.given) != 0)
         return strcmp(px.given , py.given) < 0;
     if(strcmp(px.sur , py.sur) != 0)
         return strcmp(px.sur , py.sur) < 0;
-    if(strcmp(px.add , py.add) != 0)
-        return strcmp(px.add , py.add) < 0;
+    //if(strcmp(px.add , py.add) != 0)
+    //    return strcmp(px.add , py.add) < 0;
+    //if(px.phone != py.phone)
+    //    return px.phone < py.phone;
+    //if(px.post != py.post)
+    //    return px.post < py.post;
+    //if(px.id != py.id)
+    //    return px.id < py.id;
+    //if(strcmp(px.cul , py.cul) != 0)
+	   // return strcmp(px.cul , py.cul) < 0;
+    //if(strcmp(px.title , py.title) != 0)
+	   // return strcmp(px.title , py.title) < 0;
     return 0;
 }
 
@@ -164,8 +146,8 @@ clock_t clockBegin, clockEnd;
 int main()
 {
 
-    freopen("dataset2000extract.txt","r",stdin);
-    freopen("dataset2000snm8D.txt","w",stdout);
+    freopen("dataset10000extract.txt","r",stdin);
+    freopen("dataset10000snm2D.txt","w",stdout);
 
 	int i;
 	input();
@@ -181,6 +163,8 @@ int main()
 		//printf("%lf,%9.8lf\n",log10((double)compareCount),(double)snmDupCount/dupCount);
 		printf("for %8d comparasion , we find %8d dups",compareCount,snmDupCount);
 		printf(" , the recall is %9.8lf\n",(double)snmDupCount/dupCount);
+        if(snmDupCount == dupCount)
+            break;
 	}
     clockEnd = clock();
     printf("\nSpent %lf seconds.\n", (float)(clockEnd - clockBegin)/1000.0);

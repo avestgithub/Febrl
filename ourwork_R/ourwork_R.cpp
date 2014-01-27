@@ -10,9 +10,9 @@ using namespace std;
 #define INF 2100000000
 
 
-#define N 2000
+#define N 10000
 #define AllDimesionNum 16
-#define DimensionNum 8
+#define DimensionNum 10
 #define CharNum 2
 #define MaxLength 20
 
@@ -180,8 +180,8 @@ clock_t clockBegin, clockInsertEnd, clockEnd;
 
 int main()
 {
-    freopen("dataset2000extractALLDimensions.txt","r",stdin);
-    freopen("dataset2000ourwork_R8D.txt","w",stdout);
+    freopen("dataset10000extractALLDimensions.txt","r",stdin);
+    freopen("dataset10000R10D.txt","w",stdout);
     srand((unsigned)time(NULL));
     
 	int i, j;
@@ -211,8 +211,8 @@ int main()
 			}
 			else
 			{
-                //a[j] = peo[i].field[j] + rand()%2;
-                a[j] = peo[i].field[j];
+                a[j] = peo[i].field[j] + rand()%2;
+                //a[j] = peo[i].field[j];
                 b[j] = a[j];
 			}
 		}
@@ -253,8 +253,8 @@ int main()
 		printf("for %8d comparasion , we find %8d dups", hitCnt[i], dupCnt[i]);
 		printf(" , the recall is %9.8lf\n",(double)dupCnt[i]/dupCount);
 	}
-    printf("\nInsert operation spents %lf seconds.\n", (float)(clockInsertEnd - clockBegin)/1000.0);
-    printf("\nSearch operation spents %lf seconds.\n", (float)(clockInsertEnd - clockBegin)/1000.0);
+    printf("\nInsert operation spent %lf seconds.\n", (float)(clockInsertEnd - clockBegin)/1000.0);
+    printf("\nALL search operations spent %lf seconds.\n", (float)(clockEnd - clockInsertEnd)/1000.0);
 
     return 0;   
 }

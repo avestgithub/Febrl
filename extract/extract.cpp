@@ -8,7 +8,7 @@ using namespace std;
 //dataset2_1000_1000_3_2_4_zipf_all_1
 //dataset2_5000_5000_9_5_5_zipf_all_1
 
-#define N 2000
+#define N 10000
 
 
 struct people
@@ -40,8 +40,8 @@ struct people
 
 int main()
 {
-    freopen("dataset2000clean.txt","r",stdin);
-    freopen("dataset2000extract.txt","w",stdout);
+    freopen("dataset10000clean.txt","r",stdin);
+    freopen("dataset10000extract.txt","w",stdout);
     
 
     int i, j;
