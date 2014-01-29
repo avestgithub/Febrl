@@ -8,7 +8,7 @@
 using namespace std;
 
 
-#define N 10000
+#define N 2000
 #define Wmin 2
 #define Wmax N-1
 #define INF 2100000000
@@ -49,7 +49,7 @@ void input()
     char temps[1000];
     char tempc = '\0';
 	int tempi=-1;
-	gets(temps);//the header
+	gets(temps);//drop the header
 
     for(i = 0; i < N; i++)
     {
@@ -67,7 +67,6 @@ void input()
 		scanf("%s",peo[i].add);//address_1, //char2
 		scanf("%s",peo[i].sur);//surname, //char2
 		scanf("%s",peo[i].given);//given_name, //char2
-
 	}
 }
 
@@ -96,18 +95,18 @@ bool cmpByKey(people px, people py)
         return strcmp(px.given , py.given) < 0;
     if(strcmp(px.sur , py.sur) != 0)
         return strcmp(px.sur , py.sur) < 0;
-    //if(strcmp(px.add , py.add) != 0)
-    //    return strcmp(px.add , py.add) < 0;
-    //if(px.phone != py.phone)
-    //    return px.phone < py.phone;
-    //if(px.post != py.post)
-    //    return px.post < py.post;
-    //if(px.id != py.id)
-    //    return px.id < py.id;
-    //if(strcmp(px.cul , py.cul) != 0)
-	   // return strcmp(px.cul , py.cul) < 0;
-    //if(strcmp(px.title , py.title) != 0)
-	   // return strcmp(px.title , py.title) < 0;
+    if(strcmp(px.add , py.add) != 0)
+        return strcmp(px.add , py.add) < 0;
+    if(px.phone != py.phone)
+        return px.phone < py.phone;
+    if(px.post != py.post)
+        return px.post < py.post;
+    if(px.id != py.id)
+        return px.id < py.id;
+    if(strcmp(px.cul , py.cul) != 0)
+	    return strcmp(px.cul , py.cul) < 0;
+    if(strcmp(px.title , py.title) != 0)
+	    return strcmp(px.title , py.title) < 0;
     return 0;
 }
 
@@ -138,20 +137,16 @@ int countDcsDup(int winSize)
             int nowCompareCount = 0;
             bool findDup = 0;
             int nowWindow = INF;
-            //printf("j=%d\n",j);
             for(int k = 1; ;)
             {
-                //printf("j=%d k=%d win=%d\n",j,k,nowWindow);
                 if(peo[j].num == peo[j + k].num)
                 {
                     if(findDup == 1)
                     {
-                        //printf("dup1\n");
                         dupCount += 2;
                     }
                     else
                     {
-                        //printf("dup2\n");
                         dupCount++;
                         nowWindow = j + k + winSize - 1;
                         skip[j+k] = 1;
@@ -160,35 +155,26 @@ int countDcsDup(int winSize)
                     nowDupCount++;
                     
                 }
-                else
-                {
-                    //printf("Notdup\n");
-                }
                 compareCount++;
                 nowCompareCount++;
                 if((j + k) >= (N-1))
                 {
-                    //printf("1\n");
                     break;
                 }
                 else if((findDup == 1) && ((j + k) < nowWindow))
                 {
-                    //printf("2\n");
                     k++;
                 }
                 else if((k >= winSize-1) && ((double)((double)nowDupCount/(double)nowCompareCount) >= theta))
                 {
-                    //printf("3\n");
                     k++;
                 }
                 else if(k <= winSize-1)
                 {
-                    //printf("4\n");
                     k++;
                 }
                 else
                 {
-                    //printf("5\n");
                     break;
                 }
             }
@@ -203,8 +189,8 @@ clock_t clockBegin, clockEnd;
 int main()
 {
 
-    freopen("dataset10000extract.txt","r",stdin);
-    freopen("dataset10000dcs++2D.txt","w",stdout);
+    freopen("dataset2000extract.txt","r",stdin);
+    freopen("dataset2000dcs++10D.txt","w",stdout);
 
 	int i;
 	input();
@@ -216,6 +202,7 @@ int main()
 	for(int winSize = Wmin; winSize <= Wmax; winSize++)
 	{
 		int dcsDupCount = countDcsDup(winSize);
+        //将比较次数映射到log10坐标上
 		//printf("%lf,%9.8lf\n",log10((double)compareCount),(double)dcsDupCount/dupCount);
 		printf("for %8d comparasion , we find %8d dups",compareCount,dcsDupCount);
 		printf(" , the recall is %9.8lf\n",(double)dcsDupCount/dupCount);

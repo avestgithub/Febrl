@@ -19,7 +19,9 @@ using namespace std;
 #define FIELD_VALUE_MIN -1
 #define FIELD_VALUE_MAX 26
 
-#define DISTANCE_THRESHOLD 1000
+//TODO:将两个index放在一个index的前五和后五位
+//因为目前MySearchCallback函数只能传进一个参数id
+//需要改变这个做法
 #define MULTIPLY_NUMBER 100000
 
 
@@ -51,8 +53,6 @@ bool cmpDup(people px, people py);
 bool cmpDis(peoDistance dx, peoDistance dy);
 
 int nowIndex = 0;
-int searchOut = 0;
-int hitOut = 0;
 
 int hitCnt[1000];
 int dupCnt[1000];
@@ -63,19 +63,16 @@ bool MySearchCallback(int id, void* arg)
 	int index = id % MULTIPLY_NUMBER;
 	int num = id / MULTIPLY_NUMBER;
 
-	//if(calPeoDistance(peo[nowIndex], peo[index]) <= DISTANCE_THRESHOLD)
 	int distance = calPeoDistance(peo[nowIndex], peo[index]);
     //printf("id = %d nowindex = %d index = %d distance = %d\n", id, nowIndex, index, distance);
     if(nowIndex > index)
 	    hitCnt[distance]++;
-	//printf("nowIndex = %d, nowNum = %d, Hit data rect %d ", nowIndex, peo[nowIndex].num, id);
 	if(num == peo[nowIndex].id && nowIndex > index)
 	{
 		dupCnt[distance]++;
-		//searchOut ++;
-		//printf("search out!");
 	}
-	return true; // keep going
+    //keep going
+	return true;
 }
 
 //输入函数
@@ -86,7 +83,8 @@ void input()
     char temps[1000];
     char tempc = '\0';
 	int tempi=-1;
-	gets(temps);//the header
+    //the header
+	gets(temps);
 
     for(i = 0; i < N; i++)
     {
@@ -143,7 +141,7 @@ int CountAllTheDup()
 }
 
 
-//对记录按照id进行排序
+//对记录id进行排序
 bool cmpDup(people px, people py)
 {
     if(px.id != py.id)
@@ -160,7 +158,7 @@ bool cmpDis(peoDistance dx, peoDistance dy)
 	return dx.dis < dy.dis;
 }
 
-
+//计算两条记录间的距离
 int calPeoDistance(people px, people py)
 {
 	int distance=0;
@@ -211,8 +209,9 @@ int main()
 			}
 			else
 			{
-                a[j] = peo[i].field[j] + rand()%2;
-                //a[j] = peo[i].field[j];
+                a[j] = peo[i].field[j];
+                //TODO:有时候插入R树时程序会崩溃，需要用随机数去扰乱
+                //a[j] = peo[i].field[j] + rand()%2;
                 b[j] = a[j];
 			}
 		}
@@ -226,8 +225,6 @@ int main()
 	}
     clockInsertEnd = clock();
 
-	hitOut = 0;
-	searchOut = 0;
 	memset(hitCnt, 0, sizeof(hitCnt));
 	memset(dupCnt, 0, sizeof(dupCnt));
 	for (int i = 0; i < N; i++)
@@ -241,9 +238,6 @@ int main()
 		}
 		nowIndex = i;
 		int tmp = tree.Search(a, b, MySearchCallback, NULL);
-	//printf("hitOut = %d searchOut = %d\n", hitOut, searchOut);
-	//printf("for %8d comparasion , we find %8d dups", hitOut, searchOut);
-	//printf(" , the recall is %9.8lf\n",(double)searchOut/dupCount);
 	}
     clockEnd = clock();
 	for(int i = 0; i <= 900; i++)
@@ -255,6 +249,5 @@ int main()
 	}
     printf("\nInsert operation spent %lf seconds.\n", (float)(clockInsertEnd - clockBegin)/1000.0);
     printf("\nALL search operations spent %lf seconds.\n", (float)(clockEnd - clockInsertEnd)/1000.0);
-
     return 0;   
 }
