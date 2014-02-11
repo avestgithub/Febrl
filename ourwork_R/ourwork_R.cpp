@@ -9,10 +9,10 @@
 using namespace std;
 #define INF 2100000000
 
-
+//记录条数（含重复记录）
 #define N 10000
 #define AllDimesionNum 16
-#define DimensionNum 10
+#define DimensionNum 4
 #define CharNum 2
 #define MaxLength 20
 
@@ -23,7 +23,6 @@ using namespace std;
 //因为目前MySearchCallback函数只能传进一个参数id
 //需要改变这个做法
 #define MULTIPLY_NUMBER 100000
-
 
 struct people
 {
@@ -37,46 +36,29 @@ struct people
 }peo[N + 10];
 
 
-struct peoDistance
-{
-	int dis;
-	int num;
-};
-
-//function list
-int calPeoDistance(people px, people py);
-bool MySearchCallback(int id, void* arg);
-void input();
-void init();
+//函数列表
+void Input();
+void RecordInit();
 int CountAllTheDup();
-bool cmpDup(people px, people py);
-bool cmpDis(peoDistance dx, peoDistance dy);
+bool CmpById(people px, people py);
+int CalPeoDistance(people px, people py);
+void InsertToRTree();
+bool MySearchCallback(int id, void* arg);
+void SearchInRTree();
+void Output();
 
+
+//全局变量
+int dupCount;
 int nowIndex = 0;
-
 int hitCnt[1000];
 int dupCnt[1000];
+clock_t clockBegin, clockInsertEnd, clockEnd;
+RTree<int, int, DimensionNum * CharNum, float> tree;
 
-
-bool MySearchCallback(int id, void* arg)
-{
-	int index = id % MULTIPLY_NUMBER;
-	int num = id / MULTIPLY_NUMBER;
-
-	int distance = calPeoDistance(peo[nowIndex], peo[index]);
-    //printf("id = %d nowindex = %d index = %d distance = %d\n", id, nowIndex, index, distance);
-    if(nowIndex > index)
-	    hitCnt[distance]++;
-	if(num == peo[nowIndex].id && nowIndex > index)
-	{
-		dupCnt[distance]++;
-	}
-    //keep going
-	return true;
-}
 
 //输入函数
-void input()
+void Input()
 {
 	int i;
     int cnt = 0;
@@ -104,9 +86,10 @@ void input()
 	}
 }
 
+
 //初始化函数
-//把record的东西放到field中去
-void init()
+//将record中的原始信息选取导入到field中
+void RecordInit()
 {
     for(int i = 0; i < N; i++)
     {
@@ -141,8 +124,8 @@ int CountAllTheDup()
 }
 
 
-//对记录id进行排序
-bool cmpDup(people px, people py)
+//对记录按照实际id进行排序
+bool CmpById(people px, people py)
 {
     if(px.id != py.id)
 	    return px.id < py.id;
@@ -153,13 +136,8 @@ bool cmpDup(people px, people py)
 }
 
 
-bool cmpDis(peoDistance dx, peoDistance dy)
-{
-	return dx.dis < dy.dis;
-}
-
 //计算两条记录间的距离
-int calPeoDistance(people px, people py)
+int CalPeoDistance(people px, people py)
 {
 	int distance=0;
     for (int i = 0; i < DimensionNum * CharNum; i++)
@@ -172,28 +150,8 @@ int calPeoDistance(people px, people py)
 	return distance;
 }
 
-peoDistance peoDis[N+10][N+10];
-
-clock_t clockBegin, clockInsertEnd, clockEnd;
-
-int main()
+void InsertToRTree()
 {
-    freopen("dataset10000extractALLDimensions.txt","r",stdin);
-    freopen("dataset10000R10D.txt","w",stdout);
-    srand((unsigned)time(NULL));
-    
-	int i, j;
-	input();
-    init();
-	sort(peo,peo+N,cmpDup);
-
-    //find all existed dups
-	int dupCount=CountAllTheDup();
-	printf("dupcount=%d\n",dupCount);
-
-    //初始化R树
-    RTree<int, int, DimensionNum * CharNum, float> tree;
-    
     //将结点插入R树中
     clockBegin = clock();
 	for (int i = 0; i < N; i++)
@@ -209,9 +167,9 @@ int main()
 			}
 			else
 			{
-                a[j] = peo[i].field[j];
+                //a[j] = peo[i].field[j];
                 //TODO:有时候插入R树时程序会崩溃，需要用随机数去扰乱
-                //a[j] = peo[i].field[j] + rand()%2;
+                a[j] = peo[i].field[j] + rand()%2;
                 b[j] = a[j];
 			}
 		}
@@ -224,8 +182,29 @@ int main()
 		tree.Insert(a, b, (peo[i].id*MULTIPLY_NUMBER + i));
 	}
     clockInsertEnd = clock();
+    return;
+}
 
-	memset(hitCnt, 0, sizeof(hitCnt));
+bool MySearchCallback(int id, void* arg)
+{
+	int index = id % MULTIPLY_NUMBER;
+	int num = id / MULTIPLY_NUMBER;
+
+	int distance = CalPeoDistance(peo[nowIndex], peo[index]);
+    //printf("id = %d nowindex = %d index = %d distance = %d\n", id, nowIndex, index, distance);
+    if(nowIndex > index)
+	    hitCnt[distance]++;
+	if(num == peo[nowIndex].id && nowIndex > index)
+	{
+		dupCnt[distance]++;
+	}
+    //keep going
+	return true;
+}
+
+void SearchInRTree()
+{
+    memset(hitCnt, 0, sizeof(hitCnt));
 	memset(dupCnt, 0, sizeof(dupCnt));
 	for (int i = 0; i < N; i++)
 	{
@@ -240,7 +219,12 @@ int main()
 		int tmp = tree.Search(a, b, MySearchCallback, NULL);
 	}
     clockEnd = clock();
-	for(int i = 0; i <= 900; i++)
+    return;
+}
+
+void Output()
+{
+    for(int i = 0; i <= 900; i++)
 	{
 		hitCnt[i] += hitCnt[i-1];
 		dupCnt[i] += dupCnt[i-1];
@@ -249,5 +233,27 @@ int main()
 	}
     printf("\nInsert operation spent %lf seconds.\n", (float)(clockInsertEnd - clockBegin)/1000.0);
     printf("\nALL search operations spent %lf seconds.\n", (float)(clockEnd - clockInsertEnd)/1000.0);
+    return;
+}
+
+int main()
+{
+    freopen("dataset10000extractALLDimensions.txt","r",stdin);
+    freopen("dataset10000R4D.txt","w",stdout);
+    srand((unsigned)time(NULL));
+    
+	int i,j;
+	Input();
+    RecordInit();
+	sort(peo,peo+N,CmpById);
+    //find all existed dups
+	dupCount=CountAllTheDup();
+	printf("dupcount=%d\n",dupCount);
+    //插入R树
+    InsertToRTree();
+    //在R树中搜索
+    SearchInRTree();
+    //输出结果
+    Output();
     return 0;   
 }
