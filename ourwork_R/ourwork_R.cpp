@@ -12,7 +12,7 @@ using namespace std;
 //记录条数（含重复记录）
 #define N 10000
 #define AllDimesionNum 16
-#define DimensionNum 4
+#define DimensionNum 8
 #define CharNum 2
 #define MaxLength 20
 
@@ -230,6 +230,8 @@ void Output()
 		dupCnt[i] += dupCnt[i-1];
 		printf("for %8d comparasion , we find %8d dups", hitCnt[i], dupCnt[i]);
 		printf(" , the recall is %9.8lf\n",(double)dupCnt[i]/dupCount);
+        if(dupCnt[i] == dupCount)
+            break;
 	}
     printf("\nInsert operation spent %lf seconds.\n", (float)(clockInsertEnd - clockBegin)/1000.0);
     printf("\nALL search operations spent %lf seconds.\n", (float)(clockEnd - clockInsertEnd)/1000.0);
@@ -239,7 +241,7 @@ void Output()
 int main()
 {
     freopen("dataset10000extractALLDimensions.txt","r",stdin);
-    freopen("dataset10000R4D.txt","w",stdout);
+    freopen("dataset10000R8D.txt","w",stdout);
     srand((unsigned)time(NULL));
     
 	int i,j;

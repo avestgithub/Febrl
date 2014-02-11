@@ -76,9 +76,10 @@ int main()
     
     init();
 
-	printf("num, typ, dup, culture, sex, age, date_of_birth, title, given_name, surname, state, suburb, postcode, street_number, address_1, address_2, phone_number, soc_sec_id, blocking_number\n");
-
-
+    //old
+	printf("num, typ, dup, culture, sex, age, date_of_birth, title, surname, given_name, state, suburb, postcode, street_number, address_1, address_2, phone_number, soc_sec_id, blocking_number\n");
+    //new
+    //TODO:补上顺序
     for(int i = 0; i < N; i++)
     {
         //rec_id
@@ -126,8 +127,10 @@ int main()
 		
         //output info
         printf("%3d %3d %3d ",peo[i].id, peo[i].type, peo[i].dupid);
-
+        
+        //老的顺序
         /*
+        先按照这个顺序排列，然后其他维度再排列
         culture3
         title2
         social_security_ID2
@@ -137,7 +140,22 @@ int main()
         surname2
         given_name2
         */
-        int sorted[16] = {0, 4, 14, 9, 13, 11, 6, 5, 1, 2, 3, 7, 8, 10, 12, 15};
+        //int sorted[16] = {0, 4, 14, 9, 13, 11, 6, 5, 1, 2, 3, 7, 8, 10, 12, 15};
+
+
+        //新的顺序
+        /*
+        先按照这个顺序排列，然后其他维度再排列
+        given_name2
+        surname2
+        address2
+        phone_number2
+        postcode2
+        social_security_ID2
+        culture3
+        title2
+        */
+        int sorted[16] = {5, 6, 11, 13, 9, 14, 0, 4, 1, 2, 3, 7, 8, 10, 12, 15};
 
         for(int j = 0; j < DimensionNum; j++)
         {
