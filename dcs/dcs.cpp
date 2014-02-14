@@ -8,7 +8,7 @@
 using namespace std;
 
 
-#define N 2000
+#define N 10000
 #define Wmin 2
 #define Wmax N-1
 
@@ -97,18 +97,18 @@ bool cmpByKey(people px, people py)
         return strcmp(px.given , py.given) < 0;
     if(strcmp(px.sur , py.sur) != 0)
         return strcmp(px.sur , py.sur) < 0;
-    if(strcmp(px.add , py.add) != 0)
-        return strcmp(px.add , py.add) < 0;
-    if(px.phone != py.phone)
-        return px.phone < py.phone;
     if(px.post != py.post)
         return px.post < py.post;
     if(px.id != py.id)
         return px.id < py.id;
-    if(strcmp(px.cul , py.cul) != 0)
-	    return strcmp(px.cul , py.cul) < 0;
+    if(strcmp(px.add , py.add) != 0)
+        return strcmp(px.add , py.add) < 0;
+    if(px.phone != py.phone)
+        return px.phone < py.phone;
     if(strcmp(px.title , py.title) != 0)
 	    return strcmp(px.title , py.title) < 0;
+    if(strcmp(px.cul , py.cul) != 0)
+	    return strcmp(px.cul , py.cul) < 0;
     return 0;
 }
 
@@ -172,8 +172,8 @@ clock_t clockBegin, clockEnd;
 int main()
 {
 
-    freopen("dataset2000extract.txt","r",stdin);
-    freopen("dataset2000dcs10D.txt","w",stdout);
+    freopen("dataset10000extract.txt","r",stdin);
+    freopen("dataset10000dcs8D.txt","w",stdout);
 
 	int i;
 	input();
