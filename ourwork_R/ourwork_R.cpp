@@ -12,7 +12,7 @@ using namespace std;
 //记录条数（含重复记录）
 #define N 10000
 #define AllDimesionNum 16
-#define DimensionNum 4
+#define DimensionNum 10
 #define CharNum 2
 #define MaxLength 20
 
@@ -171,7 +171,7 @@ void InsertToRTree()
 			{
                 //a[j] = peo[i].field[j];
                 //TODO:有时候插入R树时程序会崩溃，需要用随机数去扰乱
-                a[j] = peo[i].field[j] + rand()%2;
+                a[j] = peo[i].field[j] + (rand()%100)/99;
                 b[j] = a[j];
 			}
 		}
@@ -236,7 +236,7 @@ void Output()
             break;
 	}
     printf("\nInsert operation spent %lf seconds.\n", (float)(clockInsertEnd - clockBegin)/1000.0);
-    printf("\nALL search operations spent %lf seconds.\n", (float)(clockEnd - clockInsertEnd)/1000.0);
+    printf("\nSearch with biggest rectangle spent %lf seconds.\n\n", (float)(clockEnd - clockInsertEnd)/1000.0);
     return;
 }
 
@@ -284,8 +284,10 @@ void CalSearchTimeInDiffRecall()
 		    int tmp = tree.Search(a, b, SearchCallbackInDiffRecall, NULL);
 	    }
         clock_t clockSearchEnd = clock();
-        printf("distance = %2d, recall = %lf, ", distance, (double)dupRecall/dupCount);
+        printf("distance in every dimension = %2d, recall = %lf, ", distance, (double)dupRecall/dupCount);
         printf("spent %lf seconds.\n", (float)(clockSearchEnd - clockSearchBegin)/1000.0);
+        if(dupRecall == dupCount)
+            break;
     }
     return;
 }
@@ -293,7 +295,7 @@ void CalSearchTimeInDiffRecall()
 int main()
 {
     freopen("dataset10000extractALLDimensions.txt","r",stdin);
-    freopen("dataset10000R4D.txt","w",stdout);
+    freopen("dataset10000R10D.txt","w",stdout);
     srand((unsigned)time(NULL));
     
 	int i,j;
