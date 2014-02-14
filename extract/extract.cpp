@@ -37,6 +37,15 @@ struct people
     char given[3];
 }peo[N + 10];
 
+bool CmpById(people px, people py)
+{
+    if(px.num != py.num)
+	    return px.num < py.num;
+    if(px.type != py.type)
+	    return px.type < py.type;
+    if(px.dupid != py.dupid)
+	    return px.dupid < py.dupid;
+}
 
 int main()
 {
@@ -68,7 +77,7 @@ int main()
 		peo[i].given[1]='*';
 	}
 
-	printf("num typ dup cul tit  id pos pho add sur giv\n");
+	printf("num typ dup cul tit id pos pho add sur giv\n");
 
 
     for(i = 0; i < N; i++)
@@ -151,16 +160,53 @@ int main()
 
 		//scanf("%s",temps);//family_role
 		gets(temps);
-		
-		
+    }
+
+    //sort(peo, peo + N, CmpById);
+
+    for(int i = 0; i < N; i++)
+    {
         printf("%3d %3d %3d ",peo[i].num, peo[i].type, peo[i].dupid);
 		printf("%3s %3s ",peo[i].cul,peo[i].title);
 		printf("%3d %3d %3d ",peo[i].id, peo[i].post, peo[i].phone);
 		printf("%3s %3s %3s ",peo[i].add, peo[i].sur, peo[i].given);
 		printf("\n");
-		
-        //system("pause");
-        
     }
+
+    //统计各个维度的扰乱程度
+    //int disturbNum[8];
+    //memset(disturbNum, 0, sizeof(disturbNum));
+    //for(int i = 0; i < N; i++)
+    //{
+    //    for(int j = 0; j < N; j++)
+    //    {
+    //        if(peo[i].num == peo[j].num && peo[i].type == 0 && peo[j].type == 1)
+    //        {
+    //            printf("111\n");
+    //            if(strcmp(peo[i].cul, peo[j].cul) != 0)
+    //                disturbNum[0]++;
+    //            if(strcmp(peo[i].title, peo[j].title) != 0)
+    //                disturbNum[1]++;
+    //            if(peo[i].id != peo[j].id)
+    //                disturbNum[2]++;
+    //            if(peo[i].post != peo[j].post)
+    //                disturbNum[3]++;
+    //            if(peo[i].phone != peo[j].phone)
+    //                disturbNum[4]++;
+    //            if(strcmp(peo[i].add, peo[j].add) != 0)
+    //                disturbNum[5]++;
+    //            if(strcmp(peo[i].sur, peo[j].sur) != 0)
+    //                disturbNum[6]++;
+    //            if(strcmp(peo[i].given, peo[j].given) != 0)
+    //                disturbNum[7]++;
+    //        }
+    //    }
+    //}
+    //for (int i = 0; i < 8; i++)
+    //{
+    //    printf("disturb %d = %d\n", i, disturbNum[i]);
+    //}
+
+
     return 0;
 }
