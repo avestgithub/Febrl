@@ -5,10 +5,8 @@
 #include<algorithm>
 using namespace std;
 
-//dataset2_1000_1000_3_2_4_zipf_all_1
-//dataset2_5000_5000_9_5_5_zipf_all_1
 
-#define N 10000
+#define N 1000000
 
 
 struct people
@@ -49,8 +47,8 @@ bool CmpById(people px, people py)
 
 int main()
 {
-    freopen("dataset10000clean.txt","r",stdin);
-    freopen("dataset10000extract.txt","w",stdout);
+    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_clean.txt","r",stdin);
+    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_extract.txt","w",stdout);
     
 
     int i, j;
@@ -96,7 +94,7 @@ int main()
             scanf("up-%d", &peo[i].dupid);
         }
 
-		scanf("%s",temps);//rec2
+		//scanf("%s",temps);//rec2
 		scanf("%s",temps);//cul
 		if(temps[0]!='-')
 		{

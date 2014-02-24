@@ -5,14 +5,12 @@
 #include<algorithm>
 using namespace std;
 
-//dataset2_1000_1000_3_2_4_zipf_all_1
-//dataset2_5000_5000_9_5_5_zipf_all_1
 
 int main()
 {
     
-    freopen("dataset10000.txt","r",stdin);
-    freopen("dataset10000clean.txt","w",stdout);
+    freopen("dataset2_200000_800000_9_5_5_zipf_all_0.txt","r",stdin);
+    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_clean.txt","w",stdout);
 
     int i,j;
     int cnt=0;

@@ -5,10 +5,8 @@
 #include<algorithm>
 using namespace std;
 
-//dataset2_1000_1000_3_2_4_zipf_all_1
-//dataset2_5000_5000_9_5_5_zipf_all_1
 
-#define N 10000
+#define N 1000000
 #define DimensionNum 16
 #define MaxLength 20
 
@@ -65,8 +63,8 @@ void init()
 
 int main()
 {
-    freopen("dataset10000clean.txt","r",stdin);
-    freopen("dataset10000extractALLDimensions.txt","w",stdout);
+    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_clean.txt","r",stdin);
+    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_extractALLDimensions.txt","w",stdout);
     
 
     int cnt = 0;
@@ -98,7 +96,7 @@ int main()
         }
 
         //rec2_id
-		scanf("%s",temps);
+		//scanf("%s",temps);
 
         //all 16 dimensions
         for(int j = 0; j < DimensionNum; j++)
