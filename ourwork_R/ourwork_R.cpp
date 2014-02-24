@@ -16,9 +16,9 @@ using namespace std;
 #define CharNum 2
 #define MaxLength 20
 
-#define MaxDistance 900
+#define MaxDistance 2000
 #define FIELD_VALUE_MIN 0
-#define FIELD_VALUE_MAX 25
+#define FIELD_VALUE_MAX 26
 
 
 struct people
@@ -51,18 +51,18 @@ int dupCount = 2701376;
 //从记录在N条记录中的序号，到记录本身id的映射表
 int indexToId[N + 10];
 int nowIndex = 0;
-long long hitCnt[1000];
-long long dupCnt[1000];
-clock_t clockBegin, clockInsertEnd, clockEnd;
+long long hitCnt[MaxDistance + 10];
+long long dupCnt[MaxDistance + 10];
 RTree<int, int, DimensionNum * CharNum, float> tree;
 int dupRecall;
-int RMax[DimensionNum * CharNum];
 int RMin[DimensionNum * CharNum];
+int RMax[DimensionNum * CharNum];
 
 
 //输入函数
 void Input()
 {
+    clock_t clockInputBegin = clock();
 	int i;
     int cnt = 0;
     char temps[1000];
@@ -88,12 +88,17 @@ void Input()
             }
         }
 	}
+    clock_t clockInputEnd = clock();
+    printf("\nInput operation spent %lf seconds.\n", (double)(clockInputEnd - clockInputBegin)/1000.0);
+    printf("Input finished.\n");
+    return;
 }
 
 
 //初始化函数
 void Init()
 {
+    clock_t clockInitBegin = clock();
     //将record中的原始信息选取导入到field中
     for(int i = 0; i < N; i++)
     {
@@ -107,6 +112,19 @@ void Init()
     }
     //Init
     memset(indexToId, -1, sizeof(indexToId));
+    for (int i = 0; i < (DimensionNum * CharNum); i++)
+	{
+		RMin[i] = FIELD_VALUE_MIN;
+		RMax[i] = FIELD_VALUE_MAX;
+	}
+    for(int i = 0; i < MaxDistance; i++)
+    {
+        hitCnt[i] = 0;
+        dupCnt[i] = 0;
+    }
+    clock_t clockInitEnd = clock();
+    printf("\nInit operation spent %lf seconds.\n", (double)(clockInitEnd - clockInitBegin)/1000.0);
+    printf("Init finished.\n");
     return;
 }
 
@@ -146,21 +164,10 @@ bool CmpById(people px, people py)
 }
 
 
-//计算两条记录间的距离
-int CalPeoDistance(people px, people py)
-{
-	int distance=0;
-    for (int i = 0; i < DimensionNum * CharNum; i++)
-	{
-		distance += abs(px.field[i] - py.field[i]);
-	}
-	return distance;
-}
-
 void InsertToRTree()
 {
     //将结点插入R树中
-    clockBegin = clock();
+    clock_t clockInsertBegin = clock();
 	for (int i = 0; i < N; i++)
 	{
         int a[DimensionNum * CharNum];
@@ -180,6 +187,7 @@ void InsertToRTree()
                 b[j] = a[j];
 			}
 		}
+        //输出中间结果以供查看
         //printf("%d %d %d\n", peo[i].id, peo[i].type, peo[i].dupid);
         //for (int j = 0; j < DimensionNum * CharNum; j++)
         //{
@@ -189,9 +197,24 @@ void InsertToRTree()
 		tree.Insert(a, b, i);
         indexToId[i] = peo[i].id;
 	}
-    clockInsertEnd = clock();
+    clock_t clockInsertEnd = clock();
+    printf("\nInsert operation spent %lf seconds.\n", (double)(clockInsertEnd - clockInsertBegin)/1000.0);
+    printf("Insert into RTree finished.\n");
     return;
 }
+
+
+//计算两条记录间的距离
+int CalPeoDistance(people px, people py)
+{
+	int distance=0;
+    for (int i = 0; i < DimensionNum * CharNum; i++)
+	{
+		distance += abs(px.field[i] - py.field[i]);
+	}
+	return distance;
+}
+
 
 bool SearchCallbackTotal(int index, void* arg)
 {
@@ -204,24 +227,31 @@ bool SearchCallbackTotal(int index, void* arg)
 		    dupCnt[distance]++;
 	    }
     }
-    //keep going
 	return true;
 }
 
 void SearchInRTree()
 {
-    memset(hitCnt, 0, sizeof(hitCnt));
-	memset(dupCnt, 0, sizeof(dupCnt));
+    clock_t clockSearchBegin = clock();
 	for (int i = 0; i < N; i++)
 	{
         clock_t clockSearchBegin = clock();
 		nowIndex = i;
-        int searchNum = tree.Search(RMax, RMin, SearchCallbackTotal, NULL);
+        int searchNum = tree.Search(RMin, RMax, SearchCallbackTotal, NULL);
         printf("index = %d\n", i);
         clock_t clockSearchEnd = clock();
-        printf("spent %lf seconds.\n", (float)(clockSearchEnd - clockSearchBegin)/1000.0);
+        printf("spent %lf seconds.\n", (double)(clockSearchEnd - clockSearchBegin)/1000.0);
+        if(i % 1000 == 0)
+        {
+            for(int j = 0; j < MaxDistance; j++)
+            {
+                printf("now dis = %d, hit = %lld, dup = %lld\n", j, hitCnt[j], dupCnt[j]);
+            }
+        }
     }
-    clockEnd = clock();
+    clock_t clockSearchEnd = clock();
+    printf("\nSearch with biggest rectangle spent %lf seconds.\n\n", (double)(clockSearchEnd - clockSearchBegin)/1000.0);
+    printf("Search in RTree finished.\n");
     return;
 }
 
@@ -236,14 +266,12 @@ void Output()
         if(dupCnt[i] == dupCount)
             break;
 	}
-    printf("\nInsert operation spent %lf seconds.\n", (float)(clockInsertEnd - clockBegin)/1000.0);
-    printf("\nSearch with biggest rectangle spent %lf seconds.\n\n", (float)(clockEnd - clockInsertEnd)/1000.0);
     return;
 }
 
 bool SearchCallbackInDiffRecall(int index, void* arg)
 {
-	if(indexToId[index] == peo[nowIndex].id && nowIndex > index)
+	if(nowIndex > index && indexToId[index] == peo[nowIndex].id)
 	{
         dupRecall ++;
 	}
@@ -252,6 +280,8 @@ bool SearchCallbackInDiffRecall(int index, void* arg)
 
 void CalSearchTimeInDiffRecall()
 {
+    int a[DimensionNum * CharNum];
+    int b[DimensionNum * CharNum];
     for(int distance = 0; distance < 30; distance ++)
     {
         clock_t clockSearchBegin = clock();
@@ -259,8 +289,6 @@ void CalSearchTimeInDiffRecall()
         for (int i = 0; i < N; i++)
 	    {
             clock_t clockOneSearchBegin = clock();
-		    int a[DimensionNum * CharNum];
-		    int b[DimensionNum * CharNum];
 		    for (int j = 0; j < (DimensionNum * CharNum); j++)
 		    {
                 a[j] = peo[i].field[j] - distance;
@@ -269,11 +297,12 @@ void CalSearchTimeInDiffRecall()
 		    nowIndex = i;
 		    int tmp = tree.Search(a, b, SearchCallbackInDiffRecall, NULL);
             clock_t clockOneSearchEnd = clock();
-            //printf("dis = %2d, index = %d, spent %lf seconds.\n", distance, i, (float)(clockOneSearchEnd - clockOneSearchBegin)/1000.0);
+            if(i % 1000 == 0)
+                printf("dis = %d, index = %d, spent %lf seconds, now dup = %d\n", distance, i, (double)(clockOneSearchEnd - clockOneSearchBegin)/1000.0), dupRecall;
 	    }
         clock_t clockSearchEnd = clock();
         printf("distance in every dimension = %2d, search out = %d, recall = %lf, ", distance, dupRecall, (double)dupRecall/dupCount);
-        printf("spent %lf seconds.\n", (float)(clockSearchEnd - clockSearchBegin)/1000.0);
+        printf("spent %lf seconds.\n", (double)(clockSearchEnd - clockSearchBegin)/1000.0);
         if(dupRecall == dupCount)
             break;
     }
@@ -285,11 +314,8 @@ int main()
     freopen("dataset2_200000_800000_9_5_5_zipf_all_0_extractALLDimensions.txt","r",stdin);
     freopen("dataset2_200000_800000_9_5_5_zipf_all_0_R2D_BigRect.txt","w",stdout);
     srand((unsigned)time(NULL));
-	int i,j;
 	Input();
-    printf("Input finished.\n");
     Init();
-    printf("Init finished.\n");
     //按照实际id排序
     //降低CountAllTheDup的时间复杂度
 	//sort(peo,peo+N,CmpById);
@@ -298,10 +324,8 @@ int main()
 	//printf("dupcount=%d\n",dupCount);
     //插入R树
     InsertToRTree();
-    printf("Insert into RTree finished.\n");
     //在R树中搜索
     SearchInRTree();
-    printf("Search in RTree finished.\n");
     //输出结果
     Output();
     //计算不同召回率的搜索时间
