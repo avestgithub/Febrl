@@ -11,10 +11,9 @@ using namespace std;
 
 //记录条数（含重复记录）
 #define N 1000000
-#define AllDimesionNum 16
-#define DimensionNum 2
+#define ExtractDimesionNum 10
+#define ExperimentDimensionNum 2
 #define CharNum 2
-#define MaxLength 20
 
 #define MaxDistance 2000
 #define FIELD_VALUE_MIN 0
@@ -28,8 +27,8 @@ struct people
     bool type;
     int dupid;
 
-    int record[DimensionNum][MaxLength];
-    int field[DimensionNum * CharNum];
+    int record[ExtractDimesionNum][CharNum];
+    int field[ExperimentDimensionNum * CharNum];
 }peo[N + 10];
 
 
@@ -48,15 +47,16 @@ void Output();
 //全局变量
 int dupCount = 2701376;
 //100w数据集是2701376
+//1w的是16431
 //从记录在N条记录中的序号，到记录本身id的映射表
 int indexToId[N + 10];
 int nowIndex = 0;
 long long hitCnt[MaxDistance + 10];
 long long dupCnt[MaxDistance + 10];
-RTree<int, int, DimensionNum * CharNum, float> tree;
+RTree<int, int, ExperimentDimensionNum * CharNum, float> tree;
 int dupRecall;
-int RMin[DimensionNum * CharNum];
-int RMax[DimensionNum * CharNum];
+int RMin[ExperimentDimensionNum * CharNum];
+int RMax[ExperimentDimensionNum * CharNum];
 
 
 //输入函数
@@ -77,9 +77,9 @@ void Input()
 		scanf("%d",&peo[i].type);
 		scanf("%d", &peo[i].dupid);
 
-        for(int j = 0; j < AllDimesionNum; j++)
+        for(int j = 0; j < ExtractDimesionNum; j++)
         {
-            for(int k = 0; k < MaxLength; k++)
+            for(int k = 0; k < CharNum; k++)
             {
                 scanf("%d", &peo[i].record[j][k]);
                 //验证没有超过25的字段
@@ -102,7 +102,7 @@ void Init()
     //将record中的原始信息选取导入到field中
     for(int i = 0; i < N; i++)
     {
-        for(int j = 0; j < DimensionNum; j++)
+        for(int j = 0; j < ExperimentDimensionNum; j++)
         {
             for(int k = 0; k < CharNum; k++)
             {
@@ -112,16 +112,13 @@ void Init()
     }
     //Init
     memset(indexToId, -1, sizeof(indexToId));
-    for (int i = 0; i < (DimensionNum * CharNum); i++)
+    for (int i = 0; i < (ExperimentDimensionNum * CharNum); i++)
 	{
 		RMin[i] = FIELD_VALUE_MIN;
 		RMax[i] = FIELD_VALUE_MAX;
 	}
-    for(int i = 0; i < MaxDistance; i++)
-    {
-        hitCnt[i] = 0;
-        dupCnt[i] = 0;
-    }
+    memset(hitCnt, 0, sizeof(hitCnt));
+    memset(dupCnt, 0, sizeof(dupCnt));
     clock_t clockInitEnd = clock();
     printf("\nInit operation spent %lf seconds.\n", (double)(clockInitEnd - clockInitBegin)/1000.0);
     printf("Init finished.\n");
@@ -170,9 +167,9 @@ void InsertToRTree()
     clock_t clockInsertBegin = clock();
 	for (int i = 0; i < N; i++)
 	{
-        int a[DimensionNum * CharNum];
-        int b[DimensionNum * CharNum];
-		for (int j = 0; j < (DimensionNum * CharNum); j++)
+        int a[ExperimentDimensionNum * CharNum];
+        int b[ExperimentDimensionNum * CharNum];
+		for (int j = 0; j < (ExperimentDimensionNum * CharNum); j++)
 		{
 			if(peo[i].field[j] == -1)
 			{
@@ -208,7 +205,7 @@ void InsertToRTree()
 int CalPeoDistance(people px, people py)
 {
 	int distance=0;
-    for (int i = 0; i < DimensionNum * CharNum; i++)
+    for (int i = 0; i < ExperimentDimensionNum * CharNum; i++)
 	{
 		distance += abs(px.field[i] - py.field[i]);
 	}
@@ -238,10 +235,10 @@ void SearchInRTree()
         clock_t clockSearchBegin = clock();
 		nowIndex = i;
         int searchNum = tree.Search(RMin, RMax, SearchCallbackTotal, NULL);
-        printf("index = %d\n", i);
+        printf("index = %7d, ", i);
         clock_t clockSearchEnd = clock();
         printf("spent %lf seconds.\n", (double)(clockSearchEnd - clockSearchBegin)/1000.0);
-        if(i % 1000 == 0)
+        if(i % 100 == 99)
         {
             for(int j = 0; j < MaxDistance; j++)
             {
@@ -280,8 +277,8 @@ bool SearchCallbackInDiffRecall(int index, void* arg)
 
 void CalSearchTimeInDiffRecall()
 {
-    int a[DimensionNum * CharNum];
-    int b[DimensionNum * CharNum];
+    int a[ExperimentDimensionNum * CharNum];
+    int b[ExperimentDimensionNum * CharNum];
     for(int distance = 0; distance < 30; distance ++)
     {
         clock_t clockSearchBegin = clock();
@@ -289,7 +286,7 @@ void CalSearchTimeInDiffRecall()
         for (int i = 0; i < N; i++)
 	    {
             clock_t clockOneSearchBegin = clock();
-		    for (int j = 0; j < (DimensionNum * CharNum); j++)
+		    for (int j = 0; j < (ExperimentDimensionNum * CharNum); j++)
 		    {
                 a[j] = peo[i].field[j] - distance;
 			    b[j] = peo[i].field[j] + distance;
@@ -311,8 +308,9 @@ void CalSearchTimeInDiffRecall()
 
 int main()
 {
-    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_extractALLDimensions.txt","r",stdin);
-    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_R2D_BigRect.txt","w",stdout);
+    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_extract10D2Char.txt","r",stdin);
+    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_BigRect.txt","w",stdout);
+
     srand((unsigned)time(NULL));
 	Input();
     Init();
