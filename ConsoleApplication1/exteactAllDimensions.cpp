@@ -7,8 +7,11 @@ using namespace std;
 
 
 #define N 1000000
-#define DimensionNum 16
-#define MaxLength 20
+#define AllDimensionNum 16
+#define MaxCharLength 20
+
+#define ExtractDimensionNum 10
+#define ExtractCharNum 2
 
 
 struct people
@@ -17,41 +20,19 @@ struct people
     //org==0&&dup==1
     bool type;
     int dupid;
-
-    int record[DimensionNum][MaxLength];
+    int record[AllDimensionNum][MaxCharLength];
 }peo[N + 10];
 
 
-void outputNum(int x)
-{
-	if(x != -1 && x >= 0 && x < 100)
-	{
-		printf("%3d ", x/10);
-	}
-	else
-	{
-		printf("-1  ");
-	}
-
-	if(x != -1 && x >= 0 && x < 100)
-	{
-		printf("%3d ", x%10);
-	}
-	else
-	{
-		printf("-1  ");
-	}
-	return;
-}
-
+//全部置零
 void init()
 {
     int i,j,k;
     for(int i = 0; i < N; i++)
     {
-        for(int j = 0; j < DimensionNum; j++)
+        for(int j = 0; j < AllDimensionNum; j++)
         {
-            for(int k = 0; k < MaxLength; k++)
+            for(int k = 0; k < MaxCharLength; k++)
             {
                 peo[i].record[j][k] = -1;
             }
@@ -64,7 +45,7 @@ void init()
 int main()
 {
     freopen("dataset2_200000_800000_9_5_5_zipf_all_0_clean.txt","r",stdin);
-    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_extractALLDimensions.txt","w",stdout);
+    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_extract10D2Char.txt","w",stdout);
     
 
     int cnt = 0;
@@ -75,9 +56,10 @@ int main()
     init();
 
     //old
-	printf("num, typ, dup, culture, sex, age, date_of_birth, title, surname, given_name, state, suburb, postcode, street_number, address_1, address_2, phone_number, soc_sec_id, blocking_number\n");
+	//printf("num, typ, dup, culture, sex, age, date_of_birth, title, surname, given_name, state, suburb, postcode, street_number, address_1, address_2, phone_number, soc_sec_id, blocking_number\n");
     //new
     //TODO:补上顺序
+    printf("TODO:Fill in the names of dimensions\n");
     for(int i = 0; i < N; i++)
     {
         //rec_id
@@ -99,10 +81,11 @@ int main()
 		//scanf("%s",temps);
 
         //all 16 dimensions
-        for(int j = 0; j < DimensionNum; j++)
+        for(int j = 0; j < AllDimensionNum; j++)
         {
             scanf("%s", temps);
             int len = strlen(temps);
+            //“-1”为空值
             if(temps[0] == '-' || len == 0)
                 continue;
             for(int k = 0; k < len; k++)
@@ -119,12 +102,13 @@ int main()
             }
         }
 
+        //最后一维
 		//family_role
-        //no use
+        //没用的，舍弃
 		gets(temps);
 		
         //output info
-        printf("%3d %3d %3d ",peo[i].id, peo[i].type, peo[i].dupid);
+        printf("%7d %2d %2d   ",peo[i].id, peo[i].type, peo[i].dupid);
         
         //老的顺序
         /*
@@ -155,12 +139,13 @@ int main()
         */
         int sorted[16] = {5, 6, 11, 13, 9, 14, 0, 4, 1, 2, 3, 7, 8, 10, 12, 15};
 
-        for(int j = 0; j < DimensionNum; j++)
+        for(int j = 0; j < ExtractDimensionNum; j++)
         {
-            for (int k = 0; k < MaxLength; k++)
+            for (int k = 0; k < ExtractCharNum; k++)
             {
-                printf("%d ", peo[i].record[sorted[j]][k]);
+                printf("%2d ", peo[i].record[sorted[j]][k]);
             }
+            printf(" ");
         }
 		printf("\n");
     }
