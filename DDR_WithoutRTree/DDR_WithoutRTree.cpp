@@ -6,20 +6,18 @@
 #include <time.h>
 using namespace std;
 #define INF 2100000000
-#define ABS(a,b) (((a)>(b)) ? ((a)-(b)) : ((b)-(a)))
 
 //记录条数（含重复记录）
 #define N 1000000
-#define AllDimesionNum 16
-#define DimensionNum 10
+#define ExtractDimesionNum 10
+#define ExperimentDimensionNum 10
 #define CharNum 2
-#define MaxLength 20
+#define ExpeNum 4
 
 #define MaxDistance 550
 #define FIELD_VALUE_MIN 0
 #define FIELD_VALUE_MAX 26
 
-#define ExpeNum 4
 
 
 struct people
@@ -29,8 +27,8 @@ struct people
     bool type;
     int dupid;
 
-    int record[DimensionNum][MaxLength];
-    int field[DimensionNum * CharNum];
+    int record[ExtractDimesionNum][CharNum];
+    int field[ExperimentDimensionNum * CharNum];
 }peo[N + 10];
 
 
@@ -55,6 +53,10 @@ long long dupCnt[ExpeNum][MaxDistance + 10];
 int dupRecall;
 int distanceList[ExpeNum];
 
+//用于构造一个最大矩形
+int RMin[ExperimentDimensionNum * CharNum];
+int RMax[ExperimentDimensionNum * CharNum];
+
 
 
 //输入函数
@@ -74,14 +76,14 @@ void Input()
 		scanf("%d",&peo[i].type);
 		scanf("%d", &peo[i].dupid);
 
-        for(int j = 0; j < AllDimesionNum; j++)
+        for(int j = 0; j < ExtractDimesionNum; j++)
         {
-            for(int k = 0; k < MaxLength; k++)
+            for(int k = 0; k < CharNum; k++)
             {
                 scanf("%d", &peo[i].record[j][k]);
                 //验证没有超过25的字段
-                if(peo[i].record[j][k] > 25)
-                    printf("the field is larger than 25: %d\n", peo[i].record[j][k]);
+                if(peo[i].record[j][k] > 25 || peo[i].record[j][k] < 0)
+                    printf("the record is illegal : %d\n", peo[i].record[j][k]);
             }
         }
 	}
@@ -99,7 +101,7 @@ void Init()
     //将record中的原始信息选取导入到field中
     for(int i = 0; i < N; i++)
     {
-        for(int j = 0; j < DimensionNum; j++)
+        for(int j = 0; j < ExperimentDimensionNum; j++)
         {
             for(int k = 0; k < CharNum; k++)
             {
@@ -109,14 +111,15 @@ void Init()
     }
     //Init
     memset(indexToId, -1, sizeof(indexToId));
-    for(int i = 0; i < ExpeNum; i++)
-    {
-        for(int j = 0; j < MaxDistance; j++)
-        {
-            hitCnt[i][j] = 0;
-            dupCnt[i][j] = 0;
-        }
-    }
+    for (int i = 0; i < (ExperimentDimensionNum * CharNum); i++)
+	{
+		RMin[i] = FIELD_VALUE_MIN;
+		RMax[i] = FIELD_VALUE_MAX;
+	}
+    memset(hitCnt, 0, sizeof(hitCnt));
+    memset(dupCnt, 0, sizeof(dupCnt));
+
+
     clock_t clockInitEnd = clock();
     printf("\nInit operation spent %lf seconds.\n", (double)(clockInitEnd - clockInitBegin)/1000.0);
     printf("Init finished.\n");
@@ -128,16 +131,16 @@ void Init()
 void CalPeoDistance(people px, people py)
 {
 	int distance=0;
-    for (int i = 0; i < DimensionNum * CharNum; i++)
+    for (int i = 0; i < ExtractDimesionNum * CharNum; i++)
 	{
-		distance += ABS(px.field[i], py.field[i]);
-        if(i == 1)
+		distance += abs(px.field[i] - py.field[i]);
+        if(i == (2*2-1) )
             distanceList[0] = distance;
-        else if(i == 3)
+        else if(i == (2*4-1))
             distanceList[1] = distance;
-        else if(i == 9)
+        else if(i == (2*8-1))
             distanceList[2] = distance;
-        else if(i == 11)
+        else if(i == (2*10-1))
             distanceList[3] = distance;
 	}
 	return;
@@ -150,7 +153,7 @@ void Search()
 	for (int i = 0; i < N; i++)
 	{
         clock_t clockOneSearchBegin = clock();
-        for(int j = i+1; j < N; j++)
+        for(int j = 0; j < i; j++)
         {
             CalPeoDistance(peo[i], peo[j]);
             for(int k = 0; k < ExpeNum; k++)
@@ -204,8 +207,8 @@ void Output()
 
 int main()
 {
-    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_extractALLDimensions.txt","r",stdin);
-    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_AllDimensions_WithoutRTree.txt","w",stdout);
+    freopen(".txt","r",stdin);
+    freopen(".txt","w",stdout);
     srand((unsigned)time(NULL));
 	Input();
     Init();
