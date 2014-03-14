@@ -15,7 +15,7 @@ using namespace std;
 #define ExperimentDimensionNum 2
 #define CharNum 2
 
-#define MaxDistance 2000
+#define MaxDistance 550
 #define FIELD_VALUE_MIN 0
 #define FIELD_VALUE_MAX 26
 
@@ -49,15 +49,19 @@ int dupCount = 2701376;
 //100w数据集是2701376
 //1w的是16431
 //从记录在N条记录中的序号，到记录本身id的映射表
-int indexToId[N + 10];
+int indexToId[N];
 int nowIndex = 0;
-long long hitCnt[MaxDistance + 10];
-long long dupCnt[MaxDistance + 10];
+long long hitCnt[MaxDistance];
+long long dupCnt[MaxDistance];
 RTree<int, int, ExperimentDimensionNum * CharNum, float> tree;
 int dupRecall;
 int RMin[ExperimentDimensionNum * CharNum];
 int RMax[ExperimentDimensionNum * CharNum];
 
+//TODO:完成判断函数
+int groupInfo[N];
+int groupNum;
+bool notInGroup[N];
 
 //输入函数
 void Input()
@@ -119,6 +123,10 @@ void Init()
 	}
     memset(hitCnt, 0, sizeof(hitCnt));
     memset(dupCnt, 0, sizeof(dupCnt));
+
+    groupNum = 0;
+    memset(groupInfo, -1, sizeof(groupInfo));
+
     clock_t clockInitEnd = clock();
     printf("\nInit operation spent %lf seconds.\n", (double)(clockInitEnd - clockInitBegin)/1000.0);
     printf("Init finished.\n");
@@ -178,9 +186,9 @@ void InsertToRTree()
 			}
 			else
 			{
-                //a[j] = peo[i].field[j];
+                a[j] = peo[i].field[j];
                 //TODO:有时候插入R树时程序会崩溃，需要用随机数去扰乱
-                a[j] = peo[i].field[j] + (rand()%100)/99;
+                //a[j] = peo[i].field[j] + (rand()%10)/9;
                 b[j] = a[j];
 			}
 		}
@@ -227,17 +235,64 @@ bool SearchCallbackTotal(int index, void* arg)
 	return true;
 }
 
+//TODO:完成函数
+//bool SearchCallbackTotal(int index, void* arg)
+//{
+//    if(nowIndex <= index)
+//        return true;
+//    int distance = -1;
+//    if(groupInfo[index] == -1)
+//    {
+//        distance = CalPeoDistance(peo[nowIndex], peo[index]);
+//        hitCnt[distance]++;
+//        if(indexToId[index] == peo[nowIndex].id)
+//	    {
+//            dupCnt[distance]++;
+//            //TODO:考虑一下这种情况可不可能出现
+//            if(groupInfo[nowIndex] != -1)
+//            {
+//                groupInfo[index] = groupInfo[nowIndex];
+//            }
+//            else
+//            {
+//                groupInfo[index] = groupNum;
+//                groupInfo[nowIndex] = groupNum ++;
+//            }
+//	    }
+//    }
+//    else
+//    {
+//        if(groupInfo[nowIndex] != -1)
+//        {
+//            if(groupInfo[nowIndex] == groupInfo[index])
+//            {
+//                //TODO:如果是按照正常程序做的话，这部分可能不能这么写，不用去计算distance了
+//                distance = CalPeoDistance(peo[nowIndex], peo[index]);
+//                dupCnt[distance]++;
+//            }
+//        }
+//        else
+//        {
+//            distance = CalPeoDistance(peo[nowIndex], peo[index]);
+//            hitCnt[distance]++;
+//            if()
+//        }
+//    }
+//	return true;
+//}
+
+
 void SearchInRTree()
 {
     clock_t clockSearchBegin = clock();
 	for (int i = 0; i < N; i++)
 	{
         clock_t clockSearchBegin = clock();
+        memset(notInGroup, 0, sizeof(notInGroup));
 		nowIndex = i;
         int searchNum = tree.Search(RMin, RMax, SearchCallbackTotal, NULL);
-        printf("index = %7d, ", i);
         clock_t clockSearchEnd = clock();
-        printf("spent %lf seconds.\n", (double)(clockSearchEnd - clockSearchBegin)/1000.0);
+        printf("index = %7d, spent %lf seconds.\n", i, (double)(clockSearchEnd - clockSearchBegin)/1000.0);
         if(i % 100 == 99)
         {
             for(int j = 0; j < MaxDistance; j++)
@@ -308,8 +363,8 @@ void CalSearchTimeInDiffRecall()
 
 int main()
 {
-    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_extract10D2Char.txt","r",stdin);
-    freopen("dataset2_200000_800000_9_5_5_zipf_all_0_BigRect.txt","w",stdout);
+    freopen(".txt","r",stdin);
+    freopen(".txt","w",stdout);
 
     srand((unsigned)time(NULL));
 	Input();
