@@ -7,7 +7,7 @@
 #include<time.h>
 using namespace std;
 
-
+ 
 #define N 10000
 #define Wmin 2
 #define Wmax N-1
